@@ -199,3 +199,9 @@ button:active {
 	text-align: center;
 	font-size: 0.8em;
 }
+
+/* Loader */
+.loader {
+    display: block;
+    margin: 0 auto;
+}

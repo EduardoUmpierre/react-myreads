@@ -14,11 +14,15 @@ class BooksApp extends React.Component {
 		],
 		search: {
 			query: '',
-			result: []
-		}
+			result: [],
+			isLoading: false
+		},
+		isLoading: false
 	}
 
 	componentDidMount() {
+		this.setState({ isLoading: true })
+
 		BooksAPI.getAll().then(books => {
 			this.loadBooks(books)
 		})
@@ -35,6 +39,8 @@ class BooksApp extends React.Component {
 
 			this.addBook(newBook, shelf, false)
 		})
+
+		this.setState({ isLoading: false })
 	}
 
 	search = event => {
@@ -42,9 +48,14 @@ class BooksApp extends React.Component {
 		this.clearSearch()
 
 		if (query.length > 0) {
+			let search = Object.assign({}, this.state.search)
+			search.isLoading = true
+
+			this.setState({ search: search })
+
 			BooksAPI.search(query).then(books => {
-				let search = Object.assign({}, this.state.search)
 				search.result = books.items || books
+				search.isLoading = false
 
 				this.setState({ search: search })
 			})
@@ -55,7 +66,8 @@ class BooksApp extends React.Component {
 		this.setState({
 			search: {
 				query: '',
-				result: []
+				result: [],
+				isLoading: false
 			}
 		})
 	}
@@ -99,6 +111,7 @@ class BooksApp extends React.Component {
 							onBookshelfChange={this.bookshelfChange}
 							bookshelfs={this.state.bookshelfs}
 							onClose={this.clearSearch}
+							isLoading={this.state.search.isLoading}
 						/>
 					)}
 				/>
@@ -122,6 +135,7 @@ class BooksApp extends React.Component {
 											onBookshelfChange={
 												this.bookshelfChange
 											}
+											isLoading={this.state.isLoading}
 										/>
 									))}
 								</div>

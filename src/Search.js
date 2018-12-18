@@ -1,10 +1,17 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import Book from './Book'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import { DebounceInput } from 'react-debounce-input'
+import Book from './Book'
+import Loader from './Loader'
 
-const Search = ({ search, onSearch, onBookshelfChange, onClose }) => {
+const Search = ({
+	search,
+	onSearch,
+	onBookshelfChange,
+    onClose,
+	isLoading
+}) => {
 	return (
 		<div className="search-books">
 			<div className="search-books-bar">
@@ -29,21 +36,26 @@ const Search = ({ search, onSearch, onBookshelfChange, onClose }) => {
 				</div>
 			</div>
 			<div className="search-books-results">
-				<ol className="books-grid">
-					{search.result.map(book => (
-						<li key={book.id}>
-							<Book
-								title={book.title}
-								authors={book.authors}
-								id={book.id}
-								image={
-									book.imageLinks && book.imageLinks.thumbnail
-								}
-								onBookshelfChange={onBookshelfChange}
-							/>
-						</li>
-					))}
-				</ol>
+				<Loader isLoading={isLoading} />
+
+				{!isLoading && (
+					<ol className="books-grid">
+						{search.result.map(book => (
+							<li key={book.id}>
+								<Book
+									title={book.title}
+									authors={book.authors}
+									id={book.id}
+									image={
+										book.imageLinks &&
+										book.imageLinks.thumbnail
+									}
+									onBookshelfChange={onBookshelfChange}
+								/>
+							</li>
+						))}
+					</ol>
+				)}
 			</div>
 		</div>
 	)
