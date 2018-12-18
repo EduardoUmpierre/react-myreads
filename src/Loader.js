@@ -7,7 +7,7 @@ const Loader = ({ isLoading }) => {
 			className={`display: block !important; margin: 0 auto;`}
 			sizeUnit={'px'}
 			size={40}
-			color={'#123abc'}
+			color={'#60ac5d'}
 			loading={isLoading}
 		/>
 	)
