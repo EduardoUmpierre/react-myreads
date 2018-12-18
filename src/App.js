@@ -4,6 +4,10 @@ import * as BooksAPI from './BooksAPI'
 import { Route, Link } from 'react-router-dom'
 import Bookshelf from './Bookshelf'
 import Search from './Search'
+import Alert from 'react-s-alert'
+
+import 'react-s-alert/dist/s-alert-default.css'
+import 'react-s-alert/dist/s-alert-css-effects/slide.css'
 
 class BooksApp extends React.Component {
 	state = {
@@ -112,6 +116,25 @@ class BooksApp extends React.Component {
 	}
 
 	/**
+	 * @description Generates the alert message
+	 * @param  {} book
+	 * @param  {} newBookshelf
+	 */
+	getBookshelfChangeAlertMessage = (book, newBookshelf) => {
+		const isNone = newBookshelf === 'none'
+
+		const bookshelf =
+			!isNone &&
+			this.state.bookshelfs.find(
+				bookshelf => bookshelf.id === newBookshelf
+			).title
+
+		const action = isNone ? 'removed' : `added to ${bookshelf}`
+
+		return `"${book.title}" ${action}`
+	}
+
+	/**
 	 * @description Adds a book to a shelf
 	 * @param  {} book
 	 * @param  {} newBookshelf
@@ -125,26 +148,57 @@ class BooksApp extends React.Component {
 
 			if (bookshelf.id === newBookshelf) {
 				bookshelf.books.push(book)
-
-				// Only updates the API if it's necessary
-				if (update) {
-					BooksAPI.update(book, newBookshelf)
-				}
 			}
 
 			return bookshelf
 		})
 
+		this.updateSearchResultBookshelf(book, newBookshelf)
+
+		// Only updates the API if it's necessary
+		if (update) {
+			BooksAPI.update(book, newBookshelf)
+
+			Alert.info(
+				this.getBookshelfChangeAlertMessage(book, newBookshelf),
+				{
+					position: 'top-right',
+					effect: 'slide'
+				}
+			)
+		}
+
 		this.setState({ bookshelfs: bookshelfs })
 	}
 
-    /**
-     * @description Renders the app
-     */
+	/**
+	 * @description Updates the shelf information of the search result's book
+	 * @param  {} book
+	 * @param  {} newBookshelf
+	 */
+	updateSearchResultBookshelf = (book, newBookshelf) => {
+		let search = Object.assign({}, this.state.search)
+
+		search.result.map(searchBook => {
+			if (searchBook.id === book.id) {
+				searchBook.shelf = newBookshelf
+			}
+
+			return searchBook
+		})
+
+		this.setState({
+			search: search
+		})
+	}
+
+	/**
+	 * @description Renders the app
+	 */
 	render() {
 		return (
 			<div className="app">
-                {/* Search component */}
+				{/* Search component */}
 				<Route
 					exact
 					path="/search"
@@ -159,7 +213,7 @@ class BooksApp extends React.Component {
 					)}
 				/>
 
-                {/* Home component */}
+				{/* Home component */}
 				<Route
 					exact
 					path="/"
@@ -190,6 +244,8 @@ class BooksApp extends React.Component {
 						</div>
 					)}
 				/>
+
+				<Alert stack={{ limit: 3 }} timeout={2000} />
 			</div>
 		)
 	}

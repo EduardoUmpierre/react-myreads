@@ -205,3 +205,8 @@ button:active {
     display: block;
     margin: 0 auto;
 }
+
+/* Alert */
+.s-alert-wrapper > .s-alert-info {
+    background-color: #60ac5d;
+}
