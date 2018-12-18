@@ -20,6 +20,9 @@ class BooksApp extends React.Component {
 		isLoading: false
 	}
 
+	/**
+	 * @description Run after component initialization at DOM
+	 */
 	componentDidMount() {
 		this.setState({ isLoading: true })
 
@@ -28,6 +31,10 @@ class BooksApp extends React.Component {
 		})
 	}
 
+	/**
+	 * @description Adds all the books to the respective bookshelfs
+	 * @param {} books
+	 */
 	loadBooks = books => {
 		books.forEach(({ id, title, authors, imageLinks, shelf }) => {
 			const newBook = {
@@ -43,17 +50,35 @@ class BooksApp extends React.Component {
 		this.setState({ isLoading: false })
 	}
 
+	/**
+	 * @description Performs the search
+	 * @param {} event
+	 */
 	search = event => {
 		const query = event.target.value
 		this.clearSearch()
 
 		if (query.length > 0) {
+			// Updates the search isLoading state
 			let search = Object.assign({}, this.state.search)
 			search.isLoading = true
 
 			this.setState({ search: search })
 
 			BooksAPI.search(query).then(books => {
+				// If it is not a empty query result
+				if (!books.items) {
+					books.map(book => {
+						let shelf = this.state.bookshelfs.find(bookshelf =>
+							bookshelf.books.find(b => b.id === book.id)
+						)
+
+						book.shelf = shelf ? shelf.id : 'none'
+
+						return book
+					})
+				}
+
 				search.result = books.items || books
 				search.isLoading = false
 
@@ -62,6 +87,9 @@ class BooksApp extends React.Component {
 		}
 	}
 
+	/**
+	 * @description Clear search data
+	 */
 	clearSearch = () => {
 		this.setState({
 			search: {
@@ -72,12 +100,23 @@ class BooksApp extends React.Component {
 		})
 	}
 
+	/**
+	 * @description Bookshelf change handler
+	 * @param  {} event
+	 * @param  {} book
+	 */
 	bookshelfChange = (event, book) => {
 		const newBookshelf = event.target.value
 
 		this.addBook(book, newBookshelf)
 	}
 
+	/**
+	 * @description Adds a book to a shelf
+	 * @param  {} book
+	 * @param  {} newBookshelf
+	 * @param  {} update=true
+	 */
 	addBook = (book, newBookshelf, update = true) => {
 		let bookshelfs = this.state.bookshelfs
 
@@ -87,6 +126,7 @@ class BooksApp extends React.Component {
 			if (bookshelf.id === newBookshelf) {
 				bookshelf.books.push(book)
 
+				// Only updates the API if it's necessary
 				if (update) {
 					BooksAPI.update(book, newBookshelf)
 				}
@@ -109,7 +149,6 @@ class BooksApp extends React.Component {
 							search={this.state.search}
 							onSearch={this.search}
 							onBookshelfChange={this.bookshelfChange}
-							bookshelfs={this.state.bookshelfs}
 							onClose={this.clearSearch}
 							isLoading={this.state.search.isLoading}
 						/>

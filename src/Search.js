@@ -9,7 +9,7 @@ const Search = ({
 	search,
 	onSearch,
 	onBookshelfChange,
-    onClose,
+	onClose,
 	isLoading
 }) => {
 	return (
@@ -51,6 +51,7 @@ const Search = ({
 										book.imageLinks.thumbnail
 									}
 									onBookshelfChange={onBookshelfChange}
+									currentBookshelf={book.shelf}
 								/>
 							</li>
 						))}
