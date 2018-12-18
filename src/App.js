@@ -33,7 +33,7 @@ class BooksApp extends React.Component {
 
 	/**
 	 * @description Adds all the books to the respective bookshelfs
-	 * @param {} books
+	 * @param  {} books
 	 */
 	loadBooks = books => {
 		books.forEach(({ id, title, authors, imageLinks, shelf }) => {
@@ -52,7 +52,7 @@ class BooksApp extends React.Component {
 
 	/**
 	 * @description Performs the search
-	 * @param {} event
+	 * @param  {} event
 	 */
 	search = event => {
 		const query = event.target.value
@@ -138,9 +138,13 @@ class BooksApp extends React.Component {
 		this.setState({ bookshelfs: bookshelfs })
 	}
 
+    /**
+     * @description Renders the app
+     */
 	render() {
 		return (
 			<div className="app">
+                {/* Search component */}
 				<Route
 					exact
 					path="/search"
@@ -155,6 +159,7 @@ class BooksApp extends React.Component {
 					)}
 				/>
 
+                {/* Home component */}
 				<Route
 					exact
 					path="/"
