@@ -27,12 +27,11 @@ class BooksApp extends React.Component {
 	/**
 	 * @description Run after component initialization at DOM
 	 */
-	componentDidMount() {
+	async componentDidMount() {
 		this.setState({ isLoading: true })
 
-		BooksAPI.getAll().then(books => {
-			this.loadBooks(books)
-		})
+		const books = await BooksAPI.getAll()
+		this.loadBooks(books)
 	}
 
 	/**
